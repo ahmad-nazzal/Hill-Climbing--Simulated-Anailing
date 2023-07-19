@@ -1,0 +1,29 @@
+body,
+html {
+  margin: 0;
+  background-color: #999;
+}
+h1 {
+  margin-left: 40%;
+}
+.cell {
+  height: 60px;
+  width: 60px;
+  border: 1.5px solid grey;
+  border-style: inset;
+}
+
+.blackcell {
+  background-color: black;
+}
+
+.whitecell {
+  background-color: white;
+}
+#hill-settings {
+  height: 100px;
+  background-color: red;
+}
+#container {
+  margin-left: 40%;
+}
