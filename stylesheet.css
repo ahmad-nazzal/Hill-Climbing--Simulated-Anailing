@@ -1,18 +1,32 @@
 body,
 html {
   margin: 0;
-  background-color: #999;
+  background: linear-gradient(
+    180deg,
+    rgba(44, 43, 43, 1) 0%,
+    rgba(44, 43, 43, 1) 35%,
+    rgb(27, 27, 27) 100%
+  );
+  height: 100vh;
 }
 h1 {
-  margin-left: 40%;
+  text-align: center;
+  color: #eee;
+  margin-top: 0px;
+  padding-top: 20px;
+  margin-left: 100px;
 }
 .cell {
   height: 60px;
   width: 60px;
-  border: 1.5px solid grey;
+  border: 1.5px solid rgb(0, 0, 0);
   border-style: inset;
 }
-
+.queen {
+  font-size: 40px;
+  color: rgb(239, 65, 65);
+  transition: all 1s;
+}
 .blackcell {
   background-color: black;
 }
@@ -20,10 +34,36 @@ h1 {
 .whitecell {
   background-color: white;
 }
-#hill-settings {
-  height: 100px;
-  background-color: red;
-}
 #container {
   margin-left: 40%;
+}
+#hill-settings {
+  height: 100px;
+  /* background-color: #2c2b2b; */
+  color: #eee;
+  display: flex;
+  justify-content: center;
+  margin-left: 100px;
+}
+#h-s {
+  display: flex;
+  width: 500px;
+  justify-content: space-between;
+  align-items: center;
+}
+#reset {
+  border-radius: 9px;
+  padding: 6px 12px;
+  background-color: #eee;
+  color: #2c2b2b;
+  cursor: pointer;
+}
+#reset:hover {
+  transition: all 0.5s;
+  color: #3b3a3a;
+  background-color: #d4d1d1;
+}
+
+#speedRange {
+  margin-left: -60px;
 }
