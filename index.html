@@ -8,25 +8,42 @@
     <link href="stylesheet.css" rel="stylesheet" />
   </head>
   <body>
-    <h1>Hill Climbing & Simulated Anailing</h1>
+    <h1>Hill Climbing & Simulated Annealing</h1>
     <!-- <span class="queen">&#9819;</span> -->
-
+    <div class="algos">
+      <input type="radio" id="hill" value="hill" name="algos" checked />  
+      <label for="hill">Hill Climbing</label><br />
+        <input type="radio" id="sim" value="sim" name="algos" />  
+      <label for="sim">Simulated Annealing</label><br />
+    </div>
     <div id="hill-settings">
       <div id="h-s">
-        <div>
-          <label for="N-Queens">N-Queens:</label>
+        <div id="queen-container">
+          <label>N-Queens:</label>
           <input id="N-Queens" type="number" min="4" max="8" value="4" />
         </div>
+        <div id="temp-container">
+          <label>Max tempreture: </label>
+          <input
+            type="number"
+            name=""
+            id="temp"
+            style="width: 50px"
+            value="10"
+          />
+        </div>
         <button id="reset" onclick="reset()">Reset</button>
-        <label>Speed:</label>
-        <input
-          id="speedRange"
-          type="range"
-          onclick="speedd()"
-          min="500"
-          max="2000"
-          value="1000"
-        />
+        <div id="range-container">
+          <label>Speed:</label>
+          <input
+            id="speedRange"
+            type="range"
+            onclick="speedd()"
+            min="500"
+            max="2000"
+            value="1000"
+          />
+        </div>
       </div>
     </div>
     <div id="container"></div>

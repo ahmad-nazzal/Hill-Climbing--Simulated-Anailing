@@ -1,4 +1,5 @@
 let speed = 1000;
+let selected = "hill";
 function speedd() {
   speed = document.getElementById("speedRange").value;
   let queens = document.getElementsByClassName("queen");
@@ -32,20 +33,6 @@ function createChessBoard(dimension) {
   document.getElementById("container").innerHTML = "";
   document.getElementById("container").appendChild(center);
 }
-createChessBoard(4);
-
-document.getElementById("N-Queens").addEventListener("input", (event) => {
-  let deletePrev = document.querySelectorAll(".queen");
-  deletePrev.forEach((element) => {
-    element.remove();
-  });
-  let n = document.getElementById("N-Queens").value;
-  createChessBoard(n);
-});
-
-//+63.5
-let topp = 182;
-let leftt = 627;
 
 function reset() {
   let deletePrev = document.querySelectorAll(".queen");
@@ -59,6 +46,8 @@ function reset() {
     queen.setAttribute("class", "queen");
     queen.innerHTML = "&#9819;";
     let random = Math.floor(Math.random() * nQueens);
+    let topp = 175;
+    let leftt = 625;
     let locationRow = topp + 63.5 * random;
     let locationCol = leftt + 63.5 * i;
     // {col: ?, row:?}
@@ -75,6 +64,7 @@ function reset() {
 //-n/2
 function heuristic(locations) {
   let attacks = 0;
+
   for (let i = 0; i < locations.length; i++) {
     for (let j = 0; j < locations.length; j++) {
       if (
@@ -90,7 +80,11 @@ function heuristic(locations) {
   return (attacks / 2) * -1;
 }
 
-async function start(locations) {
+function start(locations) {
+  if (selected == "sim") simulatedAnnealing([...locations]);
+  else if (selected == "hill") hillClimbing([...locations]);
+}
+async function hillClimbing(locations) {
   let mainHeuristicLocations = [];
   let maxHeuristicChildren = -Infinity;
   locations.forEach((element) => {
@@ -99,8 +93,7 @@ async function start(locations) {
   });
   let closeList = new Set();
   let mainHeuristic = heuristic(locations);
-  let duplicateHueLocations = [];
-  //while infinte but we need to sure that it will not go to top then botom then top .......
+  let duplicateMaxHueLocationsChildren = [];
   while (true) {
     maxHeuristicChildren = -Infinity;
     console.log("----------------------------------------------");
@@ -125,53 +118,146 @@ async function start(locations) {
           if (!closeList.has(encrypt) && h >= maxHeuristicChildren) {
             closeList.add(encrypt);
             if (h > maxHeuristicChildren) {
-              duplicateHueLocations = [];
+              duplicateMaxHueLocationsChildren = [];
             }
             let arr = [];
             for (let index = 0; index < tempLocations.length; index++) {
               arr.push(tempLocations[index]);
             }
-            duplicateHueLocations.push(arr);
-
-            // maxHeuristicLocations = [];
-            // tempLocations.forEach((element) => {
-            //   maxHeuristicLocations.push(element);
-            // });
+            duplicateMaxHueLocationsChildren.push(arr);
             maxHeuristicChildren = h;
           }
         }
       }
     }
     let randomChildIndex = Math.floor(
-      Math.random() * duplicateHueLocations.length
+      Math.random() * duplicateMaxHueLocationsChildren.length
     );
-    console.log(duplicateHueLocations);
+    console.log(duplicateMaxHueLocationsChildren);
     console.log(mainHeuristic + " max parent");
     console.log(maxHeuristicChildren + " max children");
-    console.log(duplicateHueLocations[randomChildIndex]);
+    console.log(duplicateMaxHueLocationsChildren[randomChildIndex]);
     console.log(
       "--------------------------------------------------------------------------"
     );
     if (maxHeuristicChildren >= mainHeuristic) {
       changeChess(
         mainHeuristicLocations,
-        duplicateHueLocations[randomChildIndex]
+        duplicateMaxHueLocationsChildren[randomChildIndex]
       );
       await sleep(speed);
     }
     if (maxHeuristicChildren < mainHeuristic || maxHeuristicChildren == 0) {
-      return duplicateHueLocations[randomChildIndex];
+      if (maxHeuristicChildren == 0) alert("Success :)");
+      else alert("Can't solved :(");
+      return duplicateMaxHueLocationsChildren[randomChildIndex];
     } else {
       mainHeuristic = maxHeuristicChildren;
 
       mainHeuristicLocations = [];
-      duplicateHueLocations[randomChildIndex].forEach((element) => {
+      duplicateMaxHueLocationsChildren[randomChildIndex].forEach((element) => {
         mainHeuristicLocations.push(element);
       });
     }
   }
 }
+function cooling(i, T) {
+  return T / Math.log(i);
+}
+async function simulatedAnnealing(locations) {
+  let maxTemp = document.getElementById("temp").value;
 
+  let currentHeuristicLocations = [];
+  locations.forEach((element) => {
+    // mainHeuristicLocations.push(Object.assign({}, element));
+    currentHeuristicLocations.push(element);
+  });
+  let currentHeuristic = heuristic([...locations]);
+  let nextHeuristic;
+  let nextHeuristicLocations;
+  let bestHeuristic;
+  let bestHeuristicLocations;
+  bestHeuristic = currentHeuristic;
+  bestHeuristicLocations = [...currentHeuristicLocations];
+
+  let lastMoveLocations = [...currentHeuristicLocations];
+
+  let allSuccessor = [];
+  let i = 2;
+  let visitedLocations = new Set();
+  while (true) {
+    console.log("----------------------------------------------");
+    let tc = cooling(i++, maxTemp);
+    allSuccessor = [];
+    let len = document.getElementById("N-Queens").value;
+
+    for (let i = 0; i < len; i++) {
+      for (let j = 0; j < len; j++) {
+        if (currentHeuristicLocations[i] != j) {
+          let tempLocations = [];
+          currentHeuristicLocations.forEach((element) => {
+            tempLocations.push(element);
+          });
+          tempLocations[i] = j;
+          let arr = [];
+          for (let index = 0; index < tempLocations.length; index++) {
+            arr.push(tempLocations[index]);
+          }
+          allSuccessor.push(arr);
+        }
+      }
+    }
+
+    let randomChildIndex = Math.floor(Math.random() * allSuccessor.length);
+    let encrypt = "";
+    for (
+      let index = 0;
+      index < allSuccessor[randomChildIndex].length;
+      index++
+    ) {
+      encrypt += allSuccessor[randomChildIndex][index];
+    }
+    if (visitedLocations.has(encrypt)) continue;
+    visitedLocations.add(encrypt);
+    nextHeuristicLocations = [...allSuccessor[randomChildIndex]];
+    nextHeuristic = heuristic([...nextHeuristicLocations]);
+    let deltaE = nextHeuristic - currentHeuristic;
+    console.log(currentHeuristicLocations);
+    console.log(currentHeuristic + " parent");
+    console.log(nextHeuristic + " random child");
+    console.log(allSuccessor[randomChildIndex]);
+    console.log(
+      "--------------------------------------------------------------------------"
+    );
+    if (deltaE > 0) {
+      currentHeuristic = nextHeuristic;
+      currentHeuristicLocations = [...nextHeuristicLocations];
+      if (bestHeuristic < currentHeuristic) {
+        bestHeuristic = currentHeuristic;
+        bestHeuristicLocations = [...currentHeuristicLocations];
+        changeChess(lastMoveLocations, bestHeuristicLocations);
+        await sleep(speed);
+        lastMoveLocations = [...bestHeuristicLocations];
+        console.log("best " + bestHeuristic);
+        console.log(bestHeuristicLocations);
+        if (bestHeuristic == 0) {
+          console.log("The goal is found: " + bestHeuristic);
+          alert("Success :)");
+          break;
+        }
+      }
+    } else if (Math.pow(Math.E, -deltaE / tc)) {
+      currentHeuristic = nextHeuristic;
+      currentHeuristicLocations = [...nextHeuristicLocations];
+    }
+
+    if (tc <= 2) {
+      console.log("last best " + bestHeuristic);
+      alert(":( The best goal found is: " + bestHeuristic);
+      break;
+    }
+  }
+}
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
@@ -183,4 +269,32 @@ function changeChess(previousLocations, nextLocations) {
     movment += tt;
     queens[i].style.top = movment + "px";
   }
+}
+
+createChessBoard(4);
+document.getElementById("N-Queens").addEventListener("input", (event) => {
+  let deletePrev = document.querySelectorAll(".queen");
+  deletePrev.forEach((element) => {
+    element.remove();
+  });
+  let n = document.getElementById("N-Queens").value;
+  createChessBoard(n);
+});
+
+const radioButtons = document.querySelectorAll('input[name="algos"]');
+for (let index = 0; index < radioButtons.length; index++) {
+  radioButtons[index].addEventListener("change", () => {
+    for (const radioButton of radioButtons) {
+      if (radioButton.checked) {
+        selected = radioButton.value;
+        break;
+      }
+    }
+    // show the output:
+    if (selected == "hill") {
+      document.getElementById("temp-container").style.display = "none";
+    } else if (selected == "sim") {
+      document.getElementById("temp-container").style.display = "flex";
+    }
+  });
 }
