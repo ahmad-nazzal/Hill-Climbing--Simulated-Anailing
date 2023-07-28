@@ -1,5 +1,7 @@
 let speed = 1000;
 let selected = "hill";
+let settings = document.getElementById("settings");
+let tcText = document.getElementById("tc");
 function speedd() {
   speed = document.getElementById("speedRange").value;
   let queens = document.getElementsByClassName("queen");
@@ -94,8 +96,12 @@ async function hillClimbing(locations) {
   let closeList = new Set();
   let mainHeuristic = heuristic(locations);
   let duplicateMaxHueLocationsChildren = [];
+  settings.innerHTML = "";
   while (true) {
     maxHeuristicChildren = -Infinity;
+    settings.innerHTML +=
+      "------------------------------------------------------------------ <br> <br>";
+
     console.log("----------------------------------------------");
     console.log(mainHeuristicLocations);
     for (let i = 0; i < locations.length; i++) {
@@ -140,6 +146,20 @@ async function hillClimbing(locations) {
     console.log(
       "--------------------------------------------------------------------------"
     );
+    settings.innerHTML +=
+      "Parent Locations is: " +
+      mainHeuristicLocations +
+      " with heuristic: " +
+      mainHeuristic +
+      "  <br> <br>";
+    settings.innerHTML +=
+      "Location of Max Heuristic from children is: " +
+      duplicateMaxHueLocationsChildren[randomChildIndex] +
+      " with heuristic: " +
+      maxHeuristicChildren +
+      "  <br>";
+    settings.innerHTML +=
+      "<br>------------------------------------------------------------------ <br> <br>";
     if (maxHeuristicChildren >= mainHeuristic) {
       changeChess(
         mainHeuristicLocations,
@@ -161,8 +181,13 @@ async function hillClimbing(locations) {
     }
   }
 }
+
 function cooling(i, T) {
-  return T / Math.log(i);
+  let selectedFunction = document.getElementById("functions");
+  if (selectedFunction.value == 1) return T / Math.log(i);
+  else if (selectedFunction.value == 2)
+    return T / (1 + 100 * Math.log10(1 + i));
+  else return T / (1 + 0.01 * i);
 }
 async function simulatedAnnealing(locations) {
   let maxTemp = document.getElementById("temp").value;
@@ -185,9 +210,8 @@ async function simulatedAnnealing(locations) {
   let allSuccessor = [];
   let i = 2;
   let visitedLocations = new Set();
+  settings.innerHTML = "";
   while (true) {
-    console.log("----------------------------------------------");
-    let tc = cooling(i++, maxTemp);
     allSuccessor = [];
     let len = document.getElementById("N-Queens").value;
 
@@ -222,6 +246,11 @@ async function simulatedAnnealing(locations) {
     nextHeuristicLocations = [...allSuccessor[randomChildIndex]];
     nextHeuristic = heuristic([...nextHeuristicLocations]);
     let deltaE = nextHeuristic - currentHeuristic;
+    let tc = cooling(i++, maxTemp);
+    console.log("----------------------------------------------");
+    tcText.innerHTML = "Current Tempreture is: " + tc + "<br>";
+    tcText.innerHTML += "Iteration " + i;
+
     console.log(currentHeuristicLocations);
     console.log(currentHeuristic + " parent");
     console.log(nextHeuristic + " random child");
@@ -229,6 +258,7 @@ async function simulatedAnnealing(locations) {
     console.log(
       "--------------------------------------------------------------------------"
     );
+
     if (deltaE > 0) {
       currentHeuristic = nextHeuristic;
       currentHeuristicLocations = [...nextHeuristicLocations];
@@ -238,6 +268,13 @@ async function simulatedAnnealing(locations) {
         changeChess(lastMoveLocations, bestHeuristicLocations);
         await sleep(speed);
         lastMoveLocations = [...bestHeuristicLocations];
+        settings.innerHTML +=
+          "------------------------------------------------------------------ <br> <br>";
+        settings.innerHTML +=
+          "Best Location is " + bestHeuristicLocations + "<br>";
+        settings.innerHTML += "with hueristic: " + bestHeuristic + "<br>";
+        settings.innerHTML +=
+          "<br>------------------------------------------------------------------ <br> <br>";
         console.log("best " + bestHeuristic);
         console.log(bestHeuristicLocations);
         if (bestHeuristic == 0) {
@@ -252,6 +289,8 @@ async function simulatedAnnealing(locations) {
     }
 
     if (tc <= 2) {
+      settings.innerHTML += "Last best heuristic is: " + bestHeuristic + "<br>";
+      settings.innerHTML += "wit location: " + bestHeuristicLocationsc + "<br>";
       console.log("last best " + bestHeuristic);
       alert(":( The best goal found is: " + bestHeuristic);
       break;
@@ -296,5 +335,7 @@ for (let index = 0; index < radioButtons.length; index++) {
     } else if (selected == "sim") {
       document.getElementById("temp-container").style.display = "flex";
     }
+    tcText.innerHTML = "";
+    settings.innerHTML = "`";
   });
 }

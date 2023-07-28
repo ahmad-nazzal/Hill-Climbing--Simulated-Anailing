@@ -18,22 +18,32 @@
     </div>
     <div id="hill-settings">
       <div id="h-s">
-        <div id="queen-container">
+        <div id="queen-container" class="grid">
           <label>N-Queens:</label>
           <input id="N-Queens" type="number" min="4" max="8" value="4" />
         </div>
-        <div id="temp-container">
-          <label>Max tempreture: </label>
-          <input
-            type="number"
-            name=""
-            id="temp"
-            style="width: 50px"
-            value="10"
-          />
+        <div id="temp-container" class="grid-1">
+          <div class="grid">
+            <label>Max tempreture: </label>
+            <input
+              type="number"
+              name=""
+              id="temp"
+              style="width: 50px"
+              value="10"
+            />
+          </div>
+          <div class="grid">
+            <label>Cooling system: </label>
+            <select id="functions">
+              <option value="1" selected="selected">Tmax / log(i)</option>
+              <option value="2">Tmax / (1 + 80 * log(1 + i))</option>
+              <option value="3">Tmax / (1 + 0.5 * i)</option>
+            </select>
+          </div>
         </div>
-        <button id="reset" onclick="reset()">Reset</button>
-        <div id="range-container">
+        <button id="reset" onclick="reset()">Start</button>
+        <div id="range-container" class="grid">
           <label>Speed:</label>
           <input
             id="speedRange"
@@ -47,5 +57,7 @@
       </div>
     </div>
     <div id="container"></div>
+    <div id="tc" class="fixed"></div>
+    <div id="settings" class="fixed"></div>
   </body>
 </html>
