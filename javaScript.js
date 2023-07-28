@@ -185,9 +185,8 @@ async function hillClimbing(locations) {
 function cooling(i, T) {
   let selectedFunction = document.getElementById("functions");
   if (selectedFunction.value == 1) return T / Math.log(i);
-  else if (selectedFunction.value == 2)
-    return T / (1 + 100 * Math.log10(1 + i));
-  else return T / (1 + 0.01 * i);
+  else if (selectedFunction.value == 2) return T / (1 + 80 * Math.log(1 + i));
+  else return T / (1 + 0.5 * i);
 }
 async function simulatedAnnealing(locations) {
   let maxTemp = document.getElementById("temp").value;
@@ -329,7 +328,6 @@ for (let index = 0; index < radioButtons.length; index++) {
         break;
       }
     }
-    // show the output:
     if (selected == "hill") {
       document.getElementById("temp-container").style.display = "none";
     } else if (selected == "sim") {
