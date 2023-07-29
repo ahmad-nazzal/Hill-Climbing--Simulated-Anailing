@@ -282,7 +282,7 @@ async function simulatedAnnealing(locations) {
           break;
         }
       }
-    } else if (Math.pow(Math.E, -deltaE / tc)) {
+    } else if (Math.pow(Math.E, -deltaE / tc) > Math.random()) {
       currentHeuristic = nextHeuristic;
       currentHeuristicLocations = [...nextHeuristicLocations];
     }
